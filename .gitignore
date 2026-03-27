@@ -10,3 +10,6 @@ build/
 
 # Logs
 npm-debug.log*
+
+# intelliJ IDEA project files
+.idea/
