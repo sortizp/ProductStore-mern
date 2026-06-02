@@ -2,8 +2,8 @@ POST http://localhost:5000/api/products HTTP/1.1
 content-type: application/json
 
 {
-  "name": "Sample Product",
-  "description": "This is a sample product description.",
-  "price": 29.99,
-  "image": "http://example.com/sample-product.jpg"
+  "name": "Morrocan coconut Oil Shampoo",
+  "description": "Morrocan coconut Oil Shampoo",
+  "price": 30.08,
+  "image": "http://example.com/amazon/sample-product.jpg"
 }
