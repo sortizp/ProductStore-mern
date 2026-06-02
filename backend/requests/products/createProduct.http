@@ -1,9 +1,0 @@
-POST http://localhost:5000/api/products HTTP/1.1
-content-type: application/json
-
-{
-  "name": "Morrocan coconut Oil Shampoo",
-  "description": "Morrocan coconut Oil Shampoo",
-  "price": 30.08,
-  "image": "http://example.com/amazon/sample-product.jpg"
-}
