@@ -23,3 +23,10 @@ backend/requests/
 #frontend env files
 frontend/.env.development
 frontend/.env.production
+
+
+#ignore docker files
+docker-compose.yml
+Dockerfile
+backend/Dockerfile
+frontend/Dockerfile

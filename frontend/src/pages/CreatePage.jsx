@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Container, TextInput, NumberInput, Textarea, Button, Notification, Stack, Title } from '@mantine/core';
 
-console.log("VITE ENV OBJECT:", import.meta.env);
+console.log("VITE ENV OBJECT: ", import.meta.env.VITE_API_URL); // Debugging line to check environment variable
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 const CreatePage = () => {
   const [products, setNewProducts] = useState([]);
@@ -13,7 +14,6 @@ const CreatePage = () => {
     setTimeout(() => setNotification((prev) => ({ ...prev, show: false })), 4000);
   };
 
-  const API_BASE_URL = import.meta.env.VITE_API_URL;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,6 +21,7 @@ const CreatePage = () => {
     // Cleanest way to get form data without manual mapping
     const formData = new FormData(e.currentTarget);
     const product = Object.fromEntries(formData.entries());
+    console.log('Submitting product:', product); // Debugging line to check form data
 
     try {
       // Fixed: Using relative path to trigger Vite Proxy and avoid CORS
