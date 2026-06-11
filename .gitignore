@@ -7,9 +7,26 @@ build/
 
 # Environment variables (sensitive info)
 .env
+.env.development
+.env.test
+.env.production
 
 # Logs
 npm-debug.log*
 
 # intelliJ IDEA project files
 .idea/
+
+# dont include http request folder from the backend directory
+backend/requests/
+
+#frontend env files
+frontend/.env.development
+frontend/.env.production
+
+
+#ignore docker files
+docker-compose.yml
+Dockerfile
+backend/Dockerfile
+frontend/Dockerfile

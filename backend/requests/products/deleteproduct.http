@@ -1,2 +1,0 @@
-@productId= 695f2c54bb19c7728fdc2ffc
-DELETE http://localhost:5000/api/products/{{productId}} HTTP/1.1

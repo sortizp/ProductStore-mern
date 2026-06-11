@@ -1,153 +1,81 @@
-import React, { useState, useRef } from 'react'
-import { Container } from '@mantine/core'
+import React, { useState } from 'react';
+import { Container, TextInput, NumberInput, Textarea, Button, Notification, Stack, Title } from '@mantine/core';
+
+console.log("VITE ENV OBJECT: ", import.meta.env.VITE_API_URL); // Debugging line to check environment variable
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 const CreatePage = () => {
-  const [products, setNewProducts] = useState([
-    {
-      name: "",
-      price: "",
-      image: "",
-    }
-  ]);
-  const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState('success');
-  const [showMessage, setShowMessage] = useState(false);
-  const messageTimerRef = useRef(null);
+  const [products, setNewProducts] = useState([]);
+  const [notification, setNotification] = useState({ show: false, message: '', color: 'green' });
 
-  const showStatusMessage = (text, type = 'success') => {
-    setMessage(text);
-    setMessageType(type);
-    setShowMessage(true);
-
-    if (messageTimerRef.current) {
-      clearTimeout(messageTimerRef.current);
-    }
-
-    messageTimerRef.current = setTimeout(() => {
-      setShowMessage(false);
-      messageTimerRef.current = null;
-    }, 7000);
+  const triggerNotification = (message, color = 'green') => {
+    setNotification({ show: true, message, color });
+    // Automatically hide after 4 seconds without complex useRef tracking
+    setTimeout(() => setNotification((prev) => ({ ...prev, show: false })), 4000);
   };
-  
-  const handleAddProduct = async (product) => {
+
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Cleanest way to get form data without manual mapping
+    const formData = new FormData(e.currentTarget);
+    const product = Object.fromEntries(formData.entries());
+    console.log('Submitting product:', product); // Debugging line to check form data
+
     try {
-      const response = await fetch('/api/products', {
+      // Fixed: Using relative path to trigger Vite Proxy and avoid CORS
+      const response = await fetch(`${API_BASE_URL}/api/products`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(product),
       });
+
       const responseData = await response.json();
+
       if (response.ok) {
         setNewProducts([...products, responseData.data]);
+        triggerNotification('Product created successfully!', 'green');
+        e.target.reset(); // Clear the form fields
       } else {
-        console.error('Failed to add product:', responseData);
+        triggerNotification('Failed to create product', 'red');
       }
     } catch (error) {
       console.error('Error:', error);
+      triggerNotification('An error occurred', 'red');
     }
   };
 
-
   return (
-    <Container size={1200} px={4} style={{ fontWeight: 'bold', fontSize: '18px' }}>
-      CreatePage      
-      <div style={{ marginTop: '20px', maxWidth: '400px' }}>
-        {showMessage && (
-          <div
-            style={{
-              marginBottom: '20px',
-              padding: '10px',
-              borderRadius: '4px',
-              color: '#fff',
-              backgroundColor: messageType === 'success' ? '#28a745' : '#dc3545',
-            }}
-          >
-            {message}
-          </div>
-        )}
-        <form
-          onSubmit={async (e) => {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const product = {
-              name: formData.get('name'),
-              price: formData.get('price'),
-              description: formData.get('description'),
-              image: formData.get('image'),
-            };
+    <Container size={400} py="xl">
+      <Title order={2} mb="lg">Create Product</Title>
 
-            try {
-              console.log('Creating product:', product);
-              const response = await fetch('/api/products', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(product),
-              });
-
-              const responseData = await response.json();
-              console.log('Create product response:', response.status, responseData);
-
-              if (response.ok) {
-                console.log('New product details:', responseData.data);
-                showStatusMessage('Product created successfully!', 'success');
-                e.target.reset();
-              } else {
-                console.error('Failed to create product:', responseData);
-                showStatusMessage('Failed to create product', 'error');
-              }
-            } catch (error) {
-              console.error('Error:', error);
-              showStatusMessage('An error occurred', 'error');
-            }
-          }}
+      {/* Clean Mantine Notification */}
+      {notification.show && (
+        <Notification 
+          color={notification.color} 
+          onClose={() => setNotification((prev) => ({ ...prev, show: false }))}
+          mb="md"
         >
-          <div style={{ marginBottom: '10px' }}>
-            <input
-              name="name"
-              type="text"
-              placeholder="Product Name"
-              required
-              style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
-            />
-          </div>
-          <div style={{ marginBottom: '10px' }}>
-            <input
-              name="price"
-              type="number"
-              placeholder="Price"
-              step="0.01"
-              required
-              style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
-            />
-          </div>
-          <div style={{ marginBottom: '10px' }}>
-            <textarea
-              name="description"
-              placeholder="Description"
-              required
-              style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc', minHeight: '60px' }}
-            />
-          </div>
-          <div style={{ marginBottom: '10px' }}>
-            <input
-              name="image"
-              type="text"
-              placeholder="Image URL"
-              required
-              style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
-            />
-          </div>
-          <button type="submit" style={{ padding: '10px 20px', borderRadius: '4px', backgroundColor: '#4CAF50', color: 'white', border: 'none' }}>
-            Add Product
-          </button>
-        </form>
-      </div>
-    </Container>
-  )
-}
+          {notification.message}
+        </Notification>
+      )}
 
-export default CreatePage
+      {/* Form with clean Mantine spacing and inputs */}
+      <form onSubmit={handleSubmit}>
+        <Stack spacing="sm">
+          <TextInput name="name" label="Product Name" placeholder="Enter name" required />
+          <NumberInput name="price" label="Price" placeholder="0.00" precision={2} min={0} required />
+          <Textarea name="description" label="Description" placeholder="Enter details" required />
+          <TextInput name="image" label="Image URL" placeholder="https://..." required />
+          
+          <Button type="submit" color="green" fullWidth mt="md">
+            Add Product
+          </Button>
+        </Stack>
+      </form>
+    </Container>
+  );
+};
+
+export default CreatePage;

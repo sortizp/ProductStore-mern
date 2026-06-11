@@ -1,10 +1,11 @@
 import mongoose from 'mongoose';
 
 // Connect to MongoDB
-export const connectDB =  async () => {
-  // Connection logic will be implemented here
+export const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI);
+    // Switch between docker MongoDB and Atlas using environment variable 
+    // // MONGO_URI - LOCAL || MONGODB_URI - atlas
+    const conn = await mongoose.connect(process.env.MONGODB_URI);
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     console.error(`Error: ${error.message}`);
