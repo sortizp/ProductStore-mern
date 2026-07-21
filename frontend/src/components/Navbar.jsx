@@ -6,7 +6,7 @@ import { FaPlusCircle, FaMoon, FaSun  } from "react-icons/fa";
 const Navbar = ({ colorScheme, toggleColorScheme }) => {
 
   return (
-    <Container size={1140} px={4}>
+    <Container size={1000} py="md">
       
       <Flex
       mih= {16}
