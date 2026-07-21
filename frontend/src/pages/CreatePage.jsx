@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
 import { Container, TextInput, NumberInput, Textarea, Button, Notification, Stack, Title } from '@mantine/core';
 
-console.log("VITE ENV OBJECT: ", import.meta.env.VITE_API_URL); // Debugging line to check environment variable
 const API_BASE_URL = import.meta.env.VITE_API_URL;
+
+const initialFormData = {
+  name: '',
+  price: '',
+  description: '',
+  image: '',
+};
 
 const CreatePage = () => {
   const [products, setNewProducts] = useState([]);
   const [notification, setNotification] = useState({ show: false, message: '', color: 'green' });
-  const [formData, setFormData] = useState({
-    name: '',
-    price: '',
-    description: '',
-    image: '',
-  });
+  const [formData, setFormData] = useState({ ...initialFormData });
 
   const triggerNotification = (message, color = 'green') => {
     setNotification({ show: true, message, color });
@@ -23,6 +24,10 @@ const CreatePage = () => {
   const handleFieldChange = (field) => (value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
+
+  const resetForm = () => {
+    setFormData({ ...initialFormData });
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -41,18 +46,18 @@ const CreatePage = () => {
         body: JSON.stringify(product),
       });
 
-      const responseData = await response.json();
+      const responseData = await response.json().catch(() => null); // Handle cases where response is not JSON
 
       if (response.ok) {
         setNewProducts((prev) => [...prev, responseData.data]);
         triggerNotification('Product created successfully!', 'green');
-        setFormData({ name: '', price: '', description: '', image: '' });
+        resetForm();
       } else {
         triggerNotification('Failed to create product', 'red');
       }
     } catch (error) {
       console.error('Error:', error);
-      triggerNotification('An error occurred', 'red');
+      triggerNotification(error.message || 'An error occurred', 'red');
     }
   };
 
